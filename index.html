@@ -2,45 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>blue</title>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Explora&display=swap" as="style">
     <link href="https://fonts.googleapis.com/css2?family=Explora&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<!--<header>-->
-<!--    <img src="design/header.png" alt="">-->
-<!--</header>-->
-<section class="two">
-    <div class="image-container">
-        <img src="mad_objects/one.jpeg" alt="">
-        <img src="mad_objects/one_vibe.jpeg" alt="">
-    </div>
+<main>
+    <section class="gallery">
+        <div class="row">
+            <div class="image-container">
+                <img src="mad_objects/one.jpeg" alt="object one">
+                <img src="mad_objects/one_vibe.jpeg" alt="feeling one">
+            </div>
+        </div>
 
-    <div class="image-container">
-        <img src="mad_objects/two.jpeg" alt="">
-        <img src="mad_objects/two_vibe.jpeg" alt="">
-    </div>
+        <div class="row">
+            <div class="image-container">
+                <img src="mad_objects/two.jpeg" alt="object two">
+                <img src="mad_objects/two_vibe.jpeg" alt="feeling two">
+            </div>
+        </div>
 
-    <div class="image-container">
-        <img src="mad_objects/three.jpeg" alt="">
-        <img src="mad_objects/three_vibe.jpeg" alt="">
-    </div>
-</section>
+        <div class="row">
+            <div class="image-container">
+                <img src="mad_objects/three.jpeg" alt="object three">
+                <img src="mad_objects/three_vibe.jpeg" alt="feeling three">
+            </div>
+        </div>
 
-<section class="one">
-    <div class="image-container">
-        <img src="mad_objects/four.jpeg" alt="">
-    </div>
+        <div class="row">
+            <div class="image-container single">
+                <img src="mad_objects/four.jpeg" alt="object four">
+            </div>
+        </div>
 
-    <div class="image-container">
-        <img src="mad_objects/five.jpeg" alt="">
-    </div>
-</section>
+        <div class="row">
+            <div class="image-container single">
+                <img src="mad_objects/five.jpeg" alt="object five">
+            </div>
+        </div>
+    </section>
+</main>
 
-<audio id="music" loop src="design/vibe.mp3"></audio>
+<audio id="background-music" loop src="design/vibe.mp3"></audio>
 <script>
-    const music = document.getElementById('music');
+    const music = document.getElementById('background-music');
     music.play().catch(() => document.body.onclick = () => music.play());
 </script>
 </body>

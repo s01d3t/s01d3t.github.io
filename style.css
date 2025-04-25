@@ -4,84 +4,67 @@
     box-sizing: border-box;
 }
 
+:root {
+    /* Размеры изображений */
+    --artwork-width: 400px;
+    --artwork-height: 450px;
+    --vibe-width: 780px;
+    --vibe-height: 450px;
+
+    /* Отступы */
+    --side-padding: 50px;
+    --gap-between-images: 25px;
+    --gap-between-rows: 50px;
+}
+
 body {
-    font-family: 'Explora', serif;
     overflow-x: hidden;
     background: url('design/background.png') center/cover no-repeat fixed;
+    min-width: calc(var(--artwork-width) + var(--vibe-width) + var(--gap-between-images) + (var(--side-padding) * 2));
 }
 
-header {
-    width: 100%;
-    height: 700px;
-    overflow: hidden;
-}
-
-header img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-p {
-    font-size: clamp(20px, 4vw, 40px);
-    text-align: center;
-}
-
-.two {
-    margin-bottom: 50px;
-    margin-left: 15px;
-    /*align-content: center;*/
-}
-
-.one {
-    margin-bottom: 50px;
-    margin-left: 15px;
-    flex-direction: column;
-    justify-content: center;
+main {
+    padding: 0 var(--side-padding);
+    margin: 0 auto;
+    min-width: 100%;
     display: flex;
+    justify-content: center;
 }
 
+.gallery {
+    max-width: 1200px;
+    width: 100%;
+}
+
+.row {
+    margin: var(--gap-between-rows) 0;
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.row:has(.image-container.single) {
+    justify-content: center;
+}
 
 .image-container {
     display: flex;
-    gap: 15px;
-    margin-top: 200px;
-    width: 100%;
-    min-height: 600px;
+    gap: var(--gap-between-images);
 }
 
+/* Общие стили для всех изображений */
 .image-container img {
-    width: 100%;
-    height: 600px;
-    object-fit: fill;
+    object-fit: cover;
 }
 
-.image-container img:first-child {
-    width: 700px;
-    justify-self: end;
+/* Стили для размеров изображений */
+.image-container img:first-child,
+.image-container.single img {
+    width: var(--artwork-width);
+    height: var(--artwork-height);
 }
 
-.one {
-    margin-bottom: 50px;
-    margin-left: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Центрируем по горизонтали */
-    justify-content: center; /* Центрируем по вертикали (если нужно) */
-}
-
-.one .image-container {
-    display: flex;
-    justify-content: center; /* Центрируем изображения по горизонтали */
-    gap: 15px;
-    margin-top: 200px;
-    width: 100%;
-    height: 600px;
-}
-
-.one .image-container img {
-    width: auto; /* Сохраняем оригинальную ширину */
-    height: 600px;
-    object-fit: contain; /* Сохраняем пропорции */
-    max-width: 100%; /* Чтобы не выходили за границы */
+.image-container:not(.single) img:last-child {
+    width: var(--vibe-width);
+    height: var(--vibe-height);
 }
