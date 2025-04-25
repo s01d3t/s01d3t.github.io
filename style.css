@@ -5,22 +5,23 @@
 }
 
 :root {
-    /* Размеры изображений */
     --artwork-width: 400px;
     --artwork-height: 450px;
     --vibe-width: 780px;
     --vibe-height: 450px;
 
-    /* Отступы */
     --side-padding: 50px;
     --gap-between-images: 25px;
-    --gap-between-rows: 50px;
+    --gap-between-rows: 80px;
+    --caption-color: #666;
+    --font-family: 'Press Start 2P', cursive;
 }
 
 body {
     overflow-x: hidden;
     background: url('design/background.png') center/cover no-repeat fixed;
     min-width: calc(var(--artwork-width) + var(--vibe-width) + var(--gap-between-images) + (var(--side-padding) * 2));
+    font-family: var(--font-family);
 }
 
 main {
@@ -58,8 +59,8 @@ main {
 }
 
 /* Стили для размеров изображений */
-.image-container img:first-child,
-.image-container.single img {
+.artwork img,
+.image-container.single .artwork img {
     width: var(--artwork-width);
     height: var(--artwork-height);
 }
@@ -67,4 +68,18 @@ main {
 .image-container:not(.single) img:last-child {
     width: var(--vibe-width);
     height: var(--vibe-height);
+}
+
+/* Стили для подписей */
+.artwork {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.caption {
+    color: var(--caption-color);
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.6;
 }
