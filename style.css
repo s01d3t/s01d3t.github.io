@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Print Clearly';
+    src: url('design/fonts/print_clearly_regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -5,16 +12,33 @@
 }
 
 :root {
-    --artwork-width: 400px;
-    --artwork-height: 450px;
-    --vibe-width: 780px;
-    --vibe-height: 450px;
+    --artwork-width: 450px;
+    --artwork-height: 500px;
+    --vibe-width: 820px;
+    --vibe-height: 500px;
 
     --side-padding: 50px;
     --gap-between-images: 25px;
-    --gap-between-rows: 80px;
-    --caption-color: #666;
-    --font-family: 'Press Start 2P', cursive;
+    --gap-between-rows: 250px;
+    --caption-color: #66666694;
+    --font-family: 'Courier New', monospace;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1000;
+    background: url('design/header.png') center/cover no-repeat;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.header.hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
 body {
@@ -22,19 +46,25 @@ body {
     background: url('design/background.png') center/cover no-repeat fixed;
     min-width: calc(var(--artwork-width) + var(--vibe-width) + var(--gap-between-images) + (var(--side-padding) * 2));
     font-family: var(--font-family);
+    padding: 0 var(--side-padding);
 }
 
 main {
-    padding: 0 var(--side-padding);
     margin: 0 auto;
-    min-width: 100%;
+    width: 100%;
     display: flex;
     justify-content: center;
+    position: relative;
+    z-index: 1;
+    padding-top: 100vh;
 }
 
 .gallery {
-    max-width: 1200px;
+    max-width: calc(var(--artwork-width) + var(--vibe-width) + var(--gap-between-images));
     width: 100%;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
 }
 
 .row {
@@ -70,16 +100,36 @@ main {
     height: var(--vibe-height);
 }
 
-/* Стили для подписей */
 .artwork {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
 }
 
 .caption {
     color: var(--caption-color);
-    font-size: 12px;
-    text-align: center;
+    font-size: 20px;
     line-height: 1.6;
+}
+
+.contact-info {
+    text-align: center;
+    padding: 40px 0;
+    font-family: var(--font-family);
+    color: var(--caption-color);
+}
+
+.contact-link {
+    color: var(--caption-color);
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.contact-link:hover {
+    opacity: 0.7;
+}
+
+.contact-separator {
+    margin: 0 15px;
+    opacity: 0.5;
 }
