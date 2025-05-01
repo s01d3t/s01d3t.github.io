@@ -147,7 +147,7 @@ main {
     font-size: 35px;
     cursor: pointer;
     padding: 10px 20px;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.5s ease;
     animation: pulse 2s ease-in-out infinite;
 }
 

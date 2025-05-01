@@ -3,6 +3,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const music = document.getElementById('background-music');
     const scrollThreshold = 300;
     const scrollDownButton = document.querySelector('.scroll-down');
+    const headerImage = new Image();
+    
+    // Hide button initially
+    scrollDownButton.style.opacity = '0';
+    scrollDownButton.style.pointerEvents = 'none';
+
+    // Load header image
+    headerImage.src = 'design/header.png';
+    headerImage.onload = () => {
+        // Show button with animation after image is loaded
+        scrollDownButton.style.opacity = '1';
+        scrollDownButton.style.pointerEvents = 'auto';
+    };
 
     // Initialize scroll position
     window.scrollTo({ top: 0, behavior: 'instant' });
