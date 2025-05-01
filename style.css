@@ -9,8 +9,8 @@
     --artwork-height: 700px;
     --vibe-width: 950px;
     --vibe-height: 700px;
-    --side-padding: 15px;
-    --gap-between-images: 15px;
+    --side-padding: 20px;
+    --gap-between-images: 20px;
     --gap-between-rows: 250px;
     --caption-color: #66666694;
     --font-family: 'Courier New', monospace;
@@ -31,6 +31,10 @@ body {
     background: url('design/header.png') center/cover no-repeat;
     opacity: 1;
     transition: opacity 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 40px;
 }
 
 .header.hidden {
@@ -121,6 +125,35 @@ main {
     height: 1.2em;
     vertical-align: middle;
     transform: translateY(-1px);
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.4;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.4;
+    }
+}
+
+.scroll-down {
+    background: none;
+    border: none;
+    color: var(--caption-color);
+    font-family: var(--font-family);
+    font-size: 35px;
+    cursor: pointer;
+    padding: 10px 20px;
+    transition: opacity 0.3s ease;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.header.hidden .scroll-down {
+    opacity: 0;
+    pointer-events: none;
 }
 
 @media (max-width: 1023px) {

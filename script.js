@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('.header');
     const music = document.getElementById('background-music');
     const scrollThreshold = 300;
+    const scrollDownButton = document.querySelector('.scroll-down');
 
     // Initialize scroll position
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -15,6 +16,21 @@ document.addEventListener('DOMContentLoaded', () => {
         
         header.style.opacity = opacity;
         header.classList.toggle('hidden', opacity === 0);
+    });
+
+    // Handle scroll down button click
+    scrollDownButton.addEventListener('click', () => {
+        const firstArtwork = document.querySelector('.artwork');
+        if (firstArtwork) {
+            const artworkRect = firstArtwork.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            const scrollPosition = window.scrollY + artworkRect.top - (windowHeight - artworkRect.height) / 2;
+            
+            window.scrollTo({
+                top: scrollPosition,
+                behavior: 'smooth'
+            });
+        }
     });
 
     // Handle background music
