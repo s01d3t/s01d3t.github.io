@@ -5,13 +5,13 @@
 }
 
 :root {
-    --artwork-width: 450px;
-    --artwork-height: 500px;
-    --vibe-width: 820px;
-    --vibe-height: 500px;
+    --artwork-width: 650px;
+    --artwork-height: 700px;
+    --vibe-width: 950px;
+    --vibe-height: 700px;
 
-    --side-padding: 50px;
-    --gap-between-images: 25px;
+    --side-padding: 15px;
+    --gap-between-images: 15px;
     --gap-between-rows: 250px;
     --caption-color: #66666694;
     --font-family: 'Courier New', monospace;
@@ -53,11 +53,6 @@ main {
     padding-top: 100vh;
 }
 
-@media (max-width: 600px) {
-    main {
-        padding-top: 300vh;
-    }
-}
 
 .gallery {
     max-width: calc(var(--artwork-width) + var(--vibe-width) + var(--gap-between-images));
@@ -70,12 +65,8 @@ main {
 .row {
     margin: var(--gap-between-rows) 0;
     display: flex;
-    justify-content: flex-start;
-    width: 100%;
-}
-
-.row:has(.image-container.single) {
     justify-content: center;
+    width: 100%;
 }
 
 .image-container {
@@ -90,14 +81,29 @@ main {
 
 /* Стили для размеров изображений */
 .artwork img,
-.image-container.single .artwork img {
+.image-container .artwork img {
     width: var(--artwork-width);
     height: var(--artwork-height);
 }
 
-.image-container:not(.single) img:last-child {
+.image-container img:last-child {
     width: var(--vibe-width);
     height: var(--vibe-height);
+}
+
+/* Hide feeling images and header on screens smaller than 1024px */
+@media (max-width: 1023px) {
+    .image-container img:last-child {
+        display: none;
+    }
+    
+    .header {
+        display: none;
+    }
+    
+    main {
+        padding-top: 0;
+    }
 }
 
 .artwork {
@@ -121,6 +127,7 @@ main {
 
 .contact-link {
     color: var(--caption-color);
+    font-size: 20px;
     text-decoration: none;
     transition: opacity 0.3s ease;
 }
