@@ -50,4 +50,29 @@ document.addEventListener('DOMContentLoaded', () => {
     music.play().catch(() => {
         document.body.onclick = () => music.play();
     });
+
+    // Защита изображений от сохранения
+    document.addEventListener('DOMContentLoaded', function() {
+        // Отключаем контекстное меню на всем сайте
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Защита от перетаскивания изображений
+        document.querySelectorAll('img').forEach(function(img) {
+            img.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+        });
+
+        // Защита от выделения изображений
+        document.querySelectorAll('img').forEach(function(img) {
+            img.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+        });
+    });
 }); 

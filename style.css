@@ -96,6 +96,7 @@ main {
     color: var(--caption-color);
     font-size: 20px;
     line-height: 1.6;
+    margin-top: 15px;
 }
 
 .contact-info {
@@ -132,7 +133,7 @@ main {
         opacity: 0.4;
     }
     50% {
-        opacity: 1;
+        opacity: 1; 
     }
     100% {
         opacity: 0.4;
@@ -144,11 +145,17 @@ main {
     border: none;
     color: var(--caption-color);
     font-family: var(--font-family);
-    font-size: 35px;
     cursor: pointer;
     padding: 10px 20px;
     transition: opacity 0.5s ease;
     animation: pulse 2s ease-in-out infinite;
+}
+
+.scroll-down svg {
+    width: 50px;
+    height: 50px;
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 2px rgba(0,0,0,0.1));
 }
 
 .header.hidden .scroll-down {
@@ -208,4 +215,19 @@ main {
     .contact-link {
         font-size: 20px;
     }
+}
+
+/* Защита изображений от сохранения */
+img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: none;
 }
