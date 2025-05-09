@@ -48,6 +48,17 @@ document.addEventListener('DOMContentLoaded', () => {
         
         header.style.opacity = opacity;
         header.classList.toggle('hidden', opacity === 0);
+        
+        // Disable scroll button when header is hidden
+        if (opacity === 0) {
+            scrollDownButton.style.opacity = '0';
+            scrollDownButton.style.pointerEvents = 'none';
+            scrollDownButton.disabled = true;
+        } else {
+            scrollDownButton.style.opacity = '1';
+            scrollDownButton.style.pointerEvents = 'auto';
+            scrollDownButton.disabled = false;
+        }
     });
 
     // Handle scroll down button click

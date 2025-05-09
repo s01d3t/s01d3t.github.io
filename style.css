@@ -194,7 +194,11 @@ main {
     }
 
     .row {
-        margin: calc(var(--gap-between-rows) * 1.2) 0;
+        margin: calc(var(--gap-between-rows) * 1.1) 0;
+    }
+
+    .row:last-child {
+        margin-bottom: 200px;
     }
 
     .image-container {
