@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollDownButton = document.querySelector('.scroll-down');
     const headerImage = new Image();
     const backgroundImage = new Image();
+    const gallery = document.querySelector('.gallery');
     
     let headerLoaded = false;
     let backgroundLoaded = false;
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         header.style.opacity = '1';
         if (headerLoaded && backgroundLoaded) {
             showScrollButton();
+            showGallery();
         }
     };
 
@@ -27,12 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.background = 'url("design/background.png") center/cover no-repeat fixed';
         if (headerLoaded && backgroundLoaded) {
             showScrollButton();
+            showGallery();
         }
     };
 
     function showScrollButton() {
         scrollDownButton.style.opacity = '1';
         scrollDownButton.style.pointerEvents = 'auto';
+    }
+
+    function showGallery() {
+        gallery.classList.add('visible');
     }
 
     // Initialize scroll position
