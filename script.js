@@ -3,33 +3,68 @@ document.addEventListener('DOMContentLoaded', () => {
     const music = document.getElementById('background-music');
     const scrollThreshold = window.innerWidth < 1024 ? 100 : 300;
     const scrollDownButton = document.querySelector('.scroll-down');
-    const headerImage = new Image();
-    const backgroundImage = new Image();
     const gallery = document.querySelector('.gallery');
     
-    let headerLoaded = false;
-    let backgroundLoaded = false;
-
-    // Load header image
-    headerImage.src = 'design/header.png';
-    headerImage.onload = () => {
-        headerLoaded = true;
-        header.style.background = 'url("design/header.png") center/cover no-repeat';
-        header.style.opacity = '1';
-        if (headerLoaded && backgroundLoaded) {
-            showScrollButton();
-            showGallery();
-        }
+    // Оптимизированная предзагрузка изображений
+    const preloadImages = () => {
+        return Promise.all([
+            new Promise((resolve) => {
+                const headerImage = new Image();
+                headerImage.onload = () => {
+                    header.style.background = 'url("design/header.png") center/cover no-repeat';
+                    header.style.opacity = '1';
+                    resolve();
+                };
+                headerImage.src = 'design/header.png';
+            }),
+            new Promise((resolve) => {
+                const backgroundImage = new Image();
+                backgroundImage.onload = () => {
+                    document.body.style.background = 'url("design/background.png") center/cover no-repeat fixed';
+                    resolve();
+                };
+                backgroundImage.src = 'design/background.png';
+            })
+        ]);
     };
 
-    // Load background image
-    backgroundImage.src = 'design/background.png';
-    backgroundImage.onload = () => {
-        backgroundLoaded = true;
-        document.body.style.background = 'url("design/background.png") center/cover no-repeat fixed';
-        if (headerLoaded && backgroundLoaded) {
+    // Оптимизированный обработчик скролла
+    let scrollTimeout;
+    const handleScroll = () => {
+        if (scrollTimeout) {
+            window.cancelAnimationFrame(scrollTimeout);
+        }
+
+        scrollTimeout = window.requestAnimationFrame(() => {
+            const currentScrollY = window.scrollY;
+            const opacity = currentScrollY > scrollThreshold 
+                ? Math.max(0, 1 - (currentScrollY - scrollThreshold) / (window.innerWidth < 1024 ? 200 : 400))
+                : 1;
+            
+            header.style.opacity = opacity;
+            header.classList.toggle('hidden', opacity === 0);
+            
+            if (opacity === 0) {
+                scrollDownButton.style.opacity = '0';
+                scrollDownButton.style.pointerEvents = 'none';
+                scrollDownButton.disabled = true;
+            } else {
+                scrollDownButton.style.opacity = '1';
+                scrollDownButton.style.pointerEvents = 'auto';
+                scrollDownButton.disabled = false;
+            }
+        });
+    };
+
+    // Инициализация страницы
+    const initPage = async () => {
+        try {
+            await preloadImages();
             showScrollButton();
             showGallery();
+            window.addEventListener('scroll', handleScroll);
+        } catch (error) {
+            console.error('Error loading images:', error);
         }
     };
 
@@ -42,32 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery.classList.add('visible');
     }
 
-    // Initialize scroll position
+    // Инициализация скролла
     window.scrollTo({ top: 0, behavior: 'instant' });
 
-    // Handle header opacity on scroll
-    window.addEventListener('scroll', () => {
-        const currentScrollY = window.scrollY;
-        const opacity = currentScrollY > scrollThreshold 
-            ? Math.max(0, 1 - (currentScrollY - scrollThreshold) / (window.innerWidth < 1024 ? 200 : 400))
-            : 1;
-        
-        header.style.opacity = opacity;
-        header.classList.toggle('hidden', opacity === 0);
-        
-        // Disable scroll button when header is hidden
-        if (opacity === 0) {
-            scrollDownButton.style.opacity = '0';
-            scrollDownButton.style.pointerEvents = 'none';
-            scrollDownButton.disabled = true;
-        } else {
-            scrollDownButton.style.opacity = '1';
-            scrollDownButton.style.pointerEvents = 'auto';
-            scrollDownButton.disabled = false;
-        }
-    });
-
-    // Handle scroll down button click
+    // Оптимизированный обработчик клика по кнопке скролла
     scrollDownButton.addEventListener('click', () => {
         const firstArtwork = document.querySelector('.artwork');
         if (firstArtwork) {
@@ -82,33 +95,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle background music
-    music.play().catch(() => {
-        document.body.onclick = () => music.play();
-    });
-
-    // Защита изображений от сохранения
-    document.addEventListener('DOMContentLoaded', function() {
-        // Отключаем контекстное меню на всем сайте
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            return false;
+    // Отложенная загрузка музыки
+    const initMusic = () => {
+        music.play().catch(() => {
+            document.body.onclick = () => {
+                music.play();
+                document.body.onclick = null;
+            };
         });
+    };
 
-        // Защита от перетаскивания изображений
-        document.querySelectorAll('img').forEach(function(img) {
-            img.addEventListener('dragstart', function(e) {
-                e.preventDefault();
-                return false;
-            });
+    // Защита изображений
+    const protectImages = () => {
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.querySelectorAll('img').forEach(img => {
+            img.addEventListener('dragstart', e => e.preventDefault());
+            img.addEventListener('selectstart', e => e.preventDefault());
         });
+    };
 
-        // Защита от выделения изображений
-        document.querySelectorAll('img').forEach(function(img) {
-            img.addEventListener('selectstart', function(e) {
-                e.preventDefault();
-                return false;
-            });
-        });
-    });
+    // Запуск инициализации
+    initPage();
+    initMusic();
+    protectImages();
 }); 
