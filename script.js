@@ -1,21 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('.header');
     const music = document.getElementById('background-music');
-    const scrollThreshold = 300;
+    const scrollThreshold = window.innerWidth < 1024 ? 100 : 300;
     const scrollDownButton = document.querySelector('.scroll-down');
     const headerImage = new Image();
+    const backgroundImage = new Image();
     
     // Hide button initially
     scrollDownButton.style.opacity = '0';
     scrollDownButton.style.pointerEvents = 'none';
 
+    let headerLoaded = false;
+    let backgroundLoaded = false;
+
     // Load header image
     headerImage.src = 'design/header.png';
     headerImage.onload = () => {
-        // Show button with animation after image is loaded
+        headerLoaded = true;
+        if (headerLoaded && backgroundLoaded) {
+            showScrollButton();
+        }
+    };
+
+    // Load background image
+    backgroundImage.src = 'design/background.png';
+    backgroundImage.onload = () => {
+        backgroundLoaded = true;
+        if (headerLoaded && backgroundLoaded) {
+            showScrollButton();
+        }
+    };
+
+    function showScrollButton() {
         scrollDownButton.style.opacity = '1';
         scrollDownButton.style.pointerEvents = 'auto';
-    };
+    }
 
     // Initialize scroll position
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -24,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', () => {
         const currentScrollY = window.scrollY;
         const opacity = currentScrollY > scrollThreshold 
-            ? Math.max(0, 1 - (currentScrollY - scrollThreshold) / 400)
+            ? Math.max(0, 1 - (currentScrollY - scrollThreshold) / (window.innerWidth < 1024 ? 200 : 400))
             : 1;
         
         header.style.opacity = opacity;

@@ -101,7 +101,7 @@ main {
 
 .contact-info {
     text-align: center;
-    padding: 40px 0;
+    padding: 20px 0;
     color: var(--caption-color);
     display: flex;
     justify-content: center;
@@ -161,6 +161,7 @@ main {
 .header.hidden .scroll-down {
     opacity: 0;
     pointer-events: none;
+    cursor: default;
 }
 
 @media (max-width: 1023px) {
@@ -168,13 +169,23 @@ main {
         min-width: auto;
     }
 
-    .image-container img:last-child,
     .header {
+        background-size: cover;
+        background-position: center;
+        padding-bottom: 20px;
+    }
+
+    .scroll-down svg {
+        width: 40px;
+        height: 40px;
+    }
+
+    .image-container img:last-child {
         display: none;
     }
     
     main {
-        padding-top: 0;
+        padding-top: 50vh;
     }
 
     .gallery {
@@ -183,7 +194,7 @@ main {
     }
 
     .row {
-        margin: 100px 0;
+        margin: calc(var(--gap-between-rows) * 1.2) 0;
     }
 
     .image-container {
@@ -223,7 +234,6 @@ img {
     -khtml-user-drag: none;
     -moz-user-drag: none;
     -o-user-drag: none;
-    user-drag: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
