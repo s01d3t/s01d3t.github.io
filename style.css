@@ -18,7 +18,7 @@
 
 body {
     overflow-x: hidden;
-    background: url('design/background.png') center/cover no-repeat fixed;
+    background: none;
     min-width: calc(var(--artwork-width) + var(--vibe-width) + var(--gap-between-images) + (var(--side-padding) * 2));
     font-family: var(--font-family);
     padding: 0 var(--side-padding);
@@ -28,8 +28,8 @@ body {
     position: fixed;
     inset: 0;
     z-index: 1000;
-    background: url('design/header.png') center/cover no-repeat;
-    opacity: 1;
+    background: none;
+    opacity: 0;
     transition: opacity 0.3s ease;
     display: flex;
     justify-content: center;
@@ -149,6 +149,8 @@ main {
     padding: 10px 20px;
     transition: opacity 0.5s ease;
     animation: pulse 2s ease-in-out infinite;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .scroll-down svg {

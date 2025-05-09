@@ -6,10 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const headerImage = new Image();
     const backgroundImage = new Image();
     
-    // Hide button initially
-    scrollDownButton.style.opacity = '0';
-    scrollDownButton.style.pointerEvents = 'none';
-
     let headerLoaded = false;
     let backgroundLoaded = false;
 
@@ -17,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     headerImage.src = 'design/header.png';
     headerImage.onload = () => {
         headerLoaded = true;
+        header.style.background = 'url("design/header.png") center/cover no-repeat';
+        header.style.opacity = '1';
         if (headerLoaded && backgroundLoaded) {
             showScrollButton();
         }
@@ -26,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     backgroundImage.src = 'design/background.png';
     backgroundImage.onload = () => {
         backgroundLoaded = true;
+        document.body.style.background = 'url("design/background.png") center/cover no-repeat fixed';
         if (headerLoaded && backgroundLoaded) {
             showScrollButton();
         }
