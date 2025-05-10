@@ -36,7 +36,6 @@ body {
     justify-content: center;
     align-items: flex-end;
     padding-bottom: 40px;
-    will-change: opacity;
 }
 
 .header.hidden {
@@ -62,7 +61,6 @@ main {
     z-index: 2;
     opacity: 0;
     transition: opacity 0.5s ease;
-    will-change: opacity;
 }
 
 .gallery.visible {
@@ -84,12 +82,6 @@ main {
 
 .image-container img {
     object-fit: cover;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.image-container img.loaded {
-    opacity: 1;
 }
 
 .loading-spinner {
@@ -191,7 +183,13 @@ main {
     animation: pulse 2s ease-in-out infinite;
     opacity: 0;
     pointer-events: none;
-    will-change: opacity, transform;
+    display: none;
+}
+
+.scroll-down.visible {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .scroll-down svg {
