@@ -1,129 +1,62 @@
 document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('.header');
-    const music = document.getElementById('background-music');
-    const scrollThreshold = window.innerWidth < 1024 ? 100 : 300;
-    const scrollDownButton = document.querySelector('.scroll-down');
+    const scrollDownBtn = document.querySelector('.scroll-down');
     const gallery = document.querySelector('.gallery');
     
-    // Приоритетная загрузка хедера
-    const loadHeader = () => {
-        return new Promise((resolve) => {
-            const headerImage = new Image();
-            headerImage.onload = () => {
-                header.style.opacity = '1';
-                resolve();
-            };
-            // Устанавливаем высокий приоритет загрузки
-            headerImage.fetchPriority = 'high';
-            headerImage.src = 'design/header.png';
-        });
+    // Initialize header and background
+    const headerImg = new Image();
+    headerImg.onload = () => {
+        header.style.backgroundImage = `url(${headerImg.src})`;
+        header.style.opacity = '1';
+        scrollDownBtn.style.opacity = '1';
+        scrollDownBtn.style.pointerEvents = 'auto';
     };
-
-    // Загрузка фона (с низким приоритетом)
-    const loadBackground = () => {
-        const backgroundImage = new Image();
-        backgroundImage.onload = () => {
-            document.body.style.background = 'url("design/background.png") center/cover no-repeat fixed';
-        };
-        // Устанавливаем низкий приоритет загрузки
-        backgroundImage.fetchPriority = 'low';
-        backgroundImage.src = 'design/background.png';
+    headerImg.src = 'design/header.png';
+    
+    // Load background
+    const bgImg = new Image();
+    bgImg.onload = () => {
+        document.body.style.background = `url(${bgImg.src}) center/cover no-repeat fixed`;
     };
-
-    // Инициализация страницы
-    const initPage = async () => {
-        try {
-            // Сначала загружаем хедер
-            await loadHeader();
-            
-            // После загрузки хедера показываем кнопку и галерею
-            showScrollButton();
-            showGallery();
-            window.addEventListener('scroll', handleScroll);
-            
-            // Загружаем фон после хедера
-            loadBackground();
-        } catch (error) {
-            console.error('Error loading header:', error);
+    bgImg.src = 'design/background.png';
+    
+    // Show gallery
+    gallery.classList.add('visible');
+    
+    // Handle scroll
+    window.addEventListener('scroll', () => {
+        const scrollPosition = window.scrollY;
+        if (scrollPosition > 50) {
+            header.style.opacity = '0';
+            scrollDownBtn.style.opacity = '0';
+            scrollDownBtn.style.pointerEvents = 'none';
+        } else {
+            header.style.opacity = '1';
+            scrollDownBtn.style.opacity = '1';
+            scrollDownBtn.style.pointerEvents = 'auto';
         }
-    };
-
-    // Оптимизированный обработчик скролла
-    let scrollTimeout;
-    const handleScroll = () => {
-        if (scrollTimeout) {
-            window.cancelAnimationFrame(scrollTimeout);
-        }
-
-        scrollTimeout = window.requestAnimationFrame(() => {
-            const currentScrollY = window.scrollY;
-            const opacity = currentScrollY > scrollThreshold 
-                ? Math.max(0, 1 - (currentScrollY - scrollThreshold) / (window.innerWidth < 1024 ? 200 : 400))
-                : 1;
-            
-            header.style.opacity = opacity;
-            header.classList.toggle('hidden', opacity === 0);
-            
-            if (opacity === 0) {
-                scrollDownButton.style.opacity = '0';
-                scrollDownButton.style.pointerEvents = 'none';
-                scrollDownButton.disabled = true;
-            } else {
-                scrollDownButton.style.opacity = '1';
-                scrollDownButton.style.pointerEvents = 'auto';
-                scrollDownButton.disabled = false;
-            }
-        });
-    };
-
-    function showScrollButton() {
-        scrollDownButton.style.opacity = '1';
-        scrollDownButton.style.pointerEvents = 'auto';
-    }
-
-    function showGallery() {
-        gallery.classList.add('visible');
-    }
-
-    // Инициализация скролла
-    window.scrollTo({ top: 0, behavior: 'instant' });
-
-    // Оптимизированный обработчик клика по кнопке скролла
-    scrollDownButton.addEventListener('click', () => {
+    });
+    
+    // Scroll button click
+    scrollDownBtn.addEventListener('click', () => {
         const firstArtwork = document.querySelector('.artwork');
         if (firstArtwork) {
             const artworkRect = firstArtwork.getBoundingClientRect();
             const windowHeight = window.innerHeight;
             const scrollPosition = window.scrollY + artworkRect.top - (windowHeight - artworkRect.height) / 2;
-            
-            window.scrollTo({
-                top: scrollPosition,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
         }
     });
-
-    // Отложенная загрузка музыки
-    const initMusic = () => {
-        music.play().catch(() => {
-            document.body.onclick = () => {
-                music.play();
-                document.body.onclick = null;
-            };
-        });
-    };
-
-    // Защита изображений
-    const protectImages = () => {
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.querySelectorAll('img').forEach(img => {
-            img.addEventListener('dragstart', e => e.preventDefault());
-            img.addEventListener('selectstart', e => e.preventDefault());
-        });
-    };
-
-    // Запуск инициализации
-    initPage();
-    initMusic();
-    protectImages();
+    
+    // Initialize audio on first click
+    const audio = document.getElementById('background-music');
+    document.addEventListener('click', () => {
+        audio.play().catch(() => {});
+    }, { once: true });
+    
+    // Protect images
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('dragstart', e => e.preventDefault());
+    });
 }); 
