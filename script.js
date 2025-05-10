@@ -5,6 +5,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const music = document.getElementById('background-music');
     const scrollThreshold = window.innerWidth < 1024 ? 100 : 300;
     
+    // Проверяем, открыт ли файл локально
+    const isLocalFile = window.location.protocol === 'file:';
+    
+    // Handle image loading
+    document.querySelectorAll('.gallery img').forEach(img => {
+        const spinner = document.createElement('div');
+        spinner.className = 'loading-spinner';
+        img.parentElement.appendChild(spinner);
+
+        // Если изображение уже загружено, сразу скрываем спиннер
+        if (img.complete) {
+            img.classList.add('loaded');
+            spinner.classList.add('hidden');
+        } else {
+            // Если изображение еще загружается
+            img.addEventListener('load', () => {
+                img.classList.add('loaded');
+                spinner.classList.add('hidden');
+            });
+
+            img.addEventListener('error', () => {
+                spinner.classList.add('hidden');
+            });
+        }
+    });
+
     // Показываем шапку сразу
     header.style.opacity = '1';
 
