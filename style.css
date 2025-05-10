@@ -18,7 +18,7 @@
 
 body {
     overflow-x: hidden;
-    background: url('design/background.png') center/cover no-repeat fixed;
+    background: url('design/background.webp') center/cover no-repeat fixed;
     min-width: calc(var(--artwork-width) + var(--vibe-width) + var(--gap-between-images) + (var(--side-padding) * 2));
     font-family: var(--font-family);
     padding: 0 var(--side-padding);
