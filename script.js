@@ -1,16 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('.header');
+    const gallery = document.querySelector('.gallery');
+    const scrollDownButton = document.querySelector('.scroll-down');
     const music = document.getElementById('background-music');
     const scrollThreshold = window.innerWidth < 1024 ? 100 : 300;
-    const scrollDownButton = document.querySelector('.scroll-down');
-    const gallery = document.querySelector('.gallery');
     
-    // Show elements
+    // Показываем шапку сразу
     header.style.opacity = '1';
-    scrollDownButton.style.opacity = '1';
-    scrollDownButton.style.pointerEvents = 'auto';
-    gallery.classList.add('visible');
-    
+
+    // Показываем галерею после загрузки
+    window.addEventListener('load', () => {
+        gallery.classList.add('visible');
+    });
+
     // Handle scroll
     window.addEventListener('scroll', () => {
         const currentScrollY = window.scrollY;
@@ -46,6 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+
+    // Показываем кнопку скролла только после полной загрузки хедера
+    const headerImage = new Image();
+    headerImage.src = 'design/header.webp';
+    headerImage.onload = () => {
+        scrollDownButton.style.opacity = '1';
+        scrollDownButton.style.pointerEvents = 'auto';
+    };
 
     // Initialize audio on first click
     music.play().catch(() => {
