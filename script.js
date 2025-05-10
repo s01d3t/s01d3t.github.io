@@ -5,27 +5,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollDownButton = document.querySelector('.scroll-down');
     const gallery = document.querySelector('.gallery');
     
-    // Оптимизированная предзагрузка изображений
-    const preloadImages = () => {
-        return Promise.all([
-            new Promise((resolve) => {
-                const headerImage = new Image();
-                headerImage.onload = () => {
-                    header.style.background = 'url("design/header.png") center/cover no-repeat';
-                    header.style.opacity = '1';
-                    resolve();
-                };
-                headerImage.src = 'design/header.png';
-            }),
-            new Promise((resolve) => {
-                const backgroundImage = new Image();
-                backgroundImage.onload = () => {
-                    document.body.style.background = 'url("design/background.png") center/cover no-repeat fixed';
-                    resolve();
-                };
-                backgroundImage.src = 'design/background.png';
-            })
-        ]);
+    // Приоритетная загрузка хедера
+    const loadHeader = () => {
+        return new Promise((resolve) => {
+            const headerImage = new Image();
+            headerImage.onload = () => {
+                header.style.opacity = '1';
+                resolve();
+            };
+            // Устанавливаем высокий приоритет загрузки
+            headerImage.fetchPriority = 'high';
+            headerImage.src = 'design/header.png';
+        });
+    };
+
+    // Загрузка фона (с низким приоритетом)
+    const loadBackground = () => {
+        const backgroundImage = new Image();
+        backgroundImage.onload = () => {
+            document.body.style.background = 'url("design/background.png") center/cover no-repeat fixed';
+        };
+        // Устанавливаем низкий приоритет загрузки
+        backgroundImage.fetchPriority = 'low';
+        backgroundImage.src = 'design/background.png';
+    };
+
+    // Инициализация страницы
+    const initPage = async () => {
+        try {
+            // Сначала загружаем хедер
+            await loadHeader();
+            
+            // После загрузки хедера показываем кнопку и галерею
+            showScrollButton();
+            showGallery();
+            window.addEventListener('scroll', handleScroll);
+            
+            // Загружаем фон после хедера
+            loadBackground();
+        } catch (error) {
+            console.error('Error loading header:', error);
+        }
     };
 
     // Оптимизированный обработчик скролла
@@ -54,18 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 scrollDownButton.disabled = false;
             }
         });
-    };
-
-    // Инициализация страницы
-    const initPage = async () => {
-        try {
-            await preloadImages();
-            showScrollButton();
-            showGallery();
-            window.addEventListener('scroll', handleScroll);
-        } catch (error) {
-            console.error('Error loading images:', error);
-        }
     };
 
     function showScrollButton() {
