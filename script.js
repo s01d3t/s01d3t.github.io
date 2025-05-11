@@ -24,17 +24,17 @@ document.addEventListener('DOMContentLoaded', () => {
             window.requestAnimationFrame(() => {
                 const opacity = window.scrollY > scrollThreshold 
                     ? Math.max(0, 1 - (window.scrollY - scrollThreshold) / (window.innerWidth < 1024 ? 200 : 400))
-                    : 1;
-                
-                header.style.opacity = opacity;
-                header.classList.toggle('hidden', opacity === 0);
-                
-                if (opacity === 0) {
+            : 1;
+        
+        header.style.opacity = opacity;
+        header.classList.toggle('hidden', opacity === 0);
+        
+        if (opacity === 0) {
                     scrollDownButton.classList.remove('visible');
-                    scrollDownButton.disabled = true;
-                } else {
+            scrollDownButton.disabled = true;
+        } else {
                     scrollDownButton.classList.add('visible');
-                    scrollDownButton.disabled = false;
+            scrollDownButton.disabled = false;
                 }
                 
                 ticking = false;
