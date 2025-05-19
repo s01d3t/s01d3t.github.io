@@ -87,18 +87,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const playIcon = playButton.querySelector('.play-icon');
     const pauseIcon = playButton.querySelector('.pause-icon');
+    const loadingIcon = playButton.querySelector('.loading-icon');
 
     // Функция создания и запуска аудио
     async function createAndMaybePlayAudio(shouldPlay) {
         if (audioCreated) return;
+        
+        if (shouldPlay) {
+            // Показываем лоадер только если пользователь нажал play
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'none';
+            loadingIcon.style.display = '';
+            playButton.classList.add('loading');
+        }
+        
         audioElement = document.createElement('audio');
         audioElement.id = 'background-music';
         audioElement.type = 'audio/mpeg';
         audioElement.loop = true;
         audioElement.src = 'design/vibe.mp3';
-        document.body.appendChild(audioElement);
+        
+        // Ждем загрузки аудио
+        await new Promise((resolve) => {
+            audioElement.addEventListener('canplaythrough', resolve, { once: true });
+            document.body.appendChild(audioElement);
+        });
+        
         audioCreated = true;
-        if (shouldPlay) await audioElement.play();
+        
+        if (shouldPlay) {
+            // Скрываем лоадер и показываем pause только если пользователь нажал play
+            loadingIcon.style.display = 'none';
+            playButton.classList.remove('loading');
+            await audioElement.play();
+            pauseIcon.style.display = '';
+        } else {
+            // При автоматической загрузке просто показываем play
+            playIcon.style.display = '';
+        }
     }
 
     // Следим за загрузкой всех ресурсов
@@ -130,14 +156,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Меняем иконку и состояние сразу
         if (!isPlaying) {
-            playIcon.style.display = 'none';
-            pauseIcon.style.display = '';
-            isPlaying = true;
             playRequested = true;
 
             if (!audioCreated) {
                 await createAndMaybePlayAudio(true);
+                isPlaying = true;
             } else {
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = '';
+                isPlaying = true;
                 await audioElement.play();
             }
         } else {

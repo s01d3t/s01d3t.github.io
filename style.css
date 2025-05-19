@@ -163,6 +163,7 @@ main {
     pointer-events: none;
     display: none;
     margin-top: 8px;
+    padding-top: 5px;
 }
 
 .play {
@@ -191,13 +192,6 @@ main {
     pointer-events: auto;
 }
 
-.scroll-down svg {
-    width: 50px;
-    height: 50px;
-    transform: scale(1.2);
-    filter: drop-shadow(0 0 2px rgba(0,0,0,0.1));
-}
-
 .header.hidden .scroll-down {
     opacity: 0;
     pointer-events: none;
@@ -215,7 +209,7 @@ main {
         padding-bottom: 20px;
     }
 
-    .scroll-down svg {
+    .down-icon {
         width: 40px;
         height: 40px;
     }
@@ -285,15 +279,16 @@ img {
     pointer-events: none;
 }
 
-.down-icon, .play-icon, .pause-icon {
-    width: 40px;
-    height: 40px;
+.play-icon, .pause-icon {
+    width: 30px;
+    height: 30px;
     filter: invert(65%) sepia(1%) saturate(325%) hue-rotate(0deg) brightness(92%) contrast(86%);
 }
 
-.pause-icon {
-    height: 38px;
-    padding: 0 4px;
+.down-icon {
+    width: 32px;
+    height: 32px;
+    filter: invert(65%) sepia(1%) saturate(325%) hue-rotate(0deg) brightness(92%) contrast(86%);
 }
 
 @keyframes fadeIn {
@@ -316,7 +311,42 @@ img {
 
 .play-icon.header-icon,
 .pause-icon.header-icon {
-    width: 38px;
-    height: 38px;
+    width: 28px;
+    height: 28px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.header:not(.hidden) .play-icon.header-icon,
+.header:not(.hidden) .pause-icon.header-icon {
+    opacity: 1;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-icon {
+    width: 32px;
+    height: 32px;
+    opacity: 0;
+    pointer-events: none;
+    animation: spin 1s linear infinite;
+    filter: invert(65%) sepia(1%) saturate(325%) hue-rotate(0deg) brightness(92%) contrast(86%);
+}
+
+.loading .play-icon,
+.loading .pause-icon {
+    display: none;
+}
+
+.loading .loading-icon {
+    opacity: 1;
+    pointer-events: auto;
 }
 
