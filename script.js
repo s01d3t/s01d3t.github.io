@@ -14,9 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const music = document.getElementById('background-music');
     const scrollThreshold = window.innerWidth < 1024 ? 100 : 300;
     
-    // Проверяем, открыт ли файл локально
-    const isLocalFile = window.location.protocol === 'file:';
-    
     // Показываем шапку сразу
     header.style.opacity = '1';
 
@@ -153,8 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         const attemptPlayback = () => {
                             audioElement.play().then(() => {
                                 isPlaying = true;
-                                pauseIcon.style.display = '';
-                                playIcon.style.display = 'none';
                             }).catch(() => {
                                 // Если не удалось воспроизвести, пробуем еще раз через небольшую задержку
                                 setTimeout(attemptPlayback, 500);
@@ -173,8 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         audioElement.play().then(() => {
                             isPlaying = true;
                             hideLoader();
-                            pauseIcon.style.display = '';
-                            playIcon.style.display = 'none';
                         }).catch(() => {
                             setTimeout(attemptPlayback, 100);
                         });
@@ -253,53 +246,110 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Функция для плавного увеличения громкости
+    function fadeInVolume(audio, callback) {
+        const fadeDuration = 2000; // 2 секунды
+        const fadeSteps = 100;
+        const fadeInterval = fadeDuration / fadeSteps;
+        let currentStep = 0;
+
+        const interval = setInterval(() => {
+            currentStep++;
+            audio.volume = currentStep / fadeSteps;
+            if (currentStep >= fadeSteps) {
+                clearInterval(interval);
+                audio.volume = 1;
+                if (callback) callback();
+            }
+        }, fadeInterval);
+    }
+
+    // Функция для плавного уменьшения громкости
+    function fadeOutVolume(audio, callback) {
+        const fadeDuration = 2000; // 2 секунды
+        const fadeSteps = 100;
+        const fadeInterval = fadeDuration / fadeSteps;
+        let currentStep = fadeSteps;
+
+        const interval = setInterval(() => {
+            currentStep--;
+            audio.volume = currentStep / fadeSteps;
+            if (currentStep <= 0) {
+                clearInterval(interval);
+                audio.volume = 0;
+                if (callback) callback();
+            }
+        }, fadeInterval);
+    }
+
     playButton.addEventListener('click', async () => {
-        if (isTransitioning) return;
+        if (isTransitioning) return; // Игнорируем клик, если идет переход
         isTransitioning = true;
 
+        // Переключаем иконки сразу же
+        if (!isPlaying) {
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = '';
+        } else {
+            playIcon.style.display = '';
+            pauseIcon.style.display = 'none';
+        }
+
         try {
-            // Меняем иконку и состояние сразу
             if (!isPlaying) {
                 playRequested = true;
 
                 if (!audioCreated) {
-                    // На iOS создаем аудио и пытаемся воспроизвести сразу
                     if (isIOS) {
                         audioElement = document.createElement('audio');
                         audioElement.id = 'background-music';
                         audioElement.type = 'audio/mpeg';
                         audioElement.loop = true;
                         audioElement.src = 'design/vibe.mp3';
-                        
-                        // Пробуем воспроизвести сразу, так как это пользовательский клик
+                        audioElement.volume = 0; // Начинаем с громкости 0
                         await audioElement.play();
                         audioCreated = true;
                         isPlaying = true;
-                        playIcon.style.display = 'none';
-                        pauseIcon.style.display = '';
+                        fadeInVolume(audioElement, () => {
+                            isTransitioning = false;
+                        }); // Плавное увеличение громкости
                         hideLoader();
                     } else {
                         await createAndMaybePlayAudio(true);
                         isPlaying = true;
+                        audioElement.volume = 0; // Начинаем с громкости 0
+                        fadeInVolume(audioElement, () => {
+                            isTransitioning = false;
+                        }); // Плавное увеличение громкости
                     }
                 } else {
                     showLoader();
+                    audioElement.volume = 0; // Начинаем с громкости 0
                     await audioElement.play();
                     isPlaying = true;
-                    playIcon.style.display = 'none';
-                    pauseIcon.style.display = '';
+                    fadeInVolume(audioElement, () => {
+                        isTransitioning = false;
+                    }); // Плавное увеличение громкости
                     hideLoader();
                 }
             } else {
-                playIcon.style.display = '';
-                pauseIcon.style.display = 'none';
-                isPlaying = false;
-                if (audioElement) audioElement.pause();
+                fadeOutVolume(audioElement, () => {
+                    audioElement.pause();
+                    isPlaying = false;
+                    isTransitioning = false;
+                }); // Плавное уменьшение громкости перед паузой
             }
         } catch (error) {
             console.error('Playback error:', error);
             showLoader();
-        } finally {
+            // В случае ошибки возвращаем иконки в предыдущее состояние
+            if (isPlaying) {
+                playIcon.style.display = 'none';
+                pauseIcon.style.display = '';
+            } else {
+                playIcon.style.display = '';
+                pauseIcon.style.display = 'none';
+            }
             isTransitioning = false;
         }
     });
@@ -334,4 +384,4 @@ document.addEventListener('DOMContentLoaded', () => {
         img.addEventListener('dragstart', e => e.preventDefault());
         img.addEventListener('selectstart', e => e.preventDefault());
     });
-}); 
+});
