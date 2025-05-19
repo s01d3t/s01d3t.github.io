@@ -176,16 +176,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Вспомогательные функции для управления лоадером
     function showLoader() {
-        playIcon.style.display = 'none';
-        pauseIcon.style.display = 'none';
-        loadingIcon.style.display = '';
-        playButton.classList.add('loading');
+        if (!playButton.classList.contains('loading')) {
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'none';
+            loadingIcon.style.display = '';
+            playButton.classList.add('loading');
+            // Force a reflow to ensure animation restarts
+            void playButton.offsetWidth;
+        }
     }
 
     function hideLoader() {
-        loadingIcon.style.display = 'none';
-        playButton.classList.remove('loading');
+        if (playButton.classList.contains('loading')) {
+            loadingIcon.style.display = 'none';
+            playButton.classList.remove('loading');
+            if (isPlaying) {
+                pauseIcon.style.display = '';
+                playIcon.style.display = 'none';
+            } else {
+                playIcon.style.display = '';
+                pauseIcon.style.display = 'none';
+            }
+        }
     }
+
+    // Добавляем обработчик для поддержания анимации при скролле
+    window.addEventListener('scroll', () => {
+        if (playButton.classList.contains('loading')) {
+            // Force a reflow to ensure animation continues
+            void playButton.offsetWidth;
+        }
+    }, { passive: true });
 
     // Следим за загрузкой всех ресурсов
     function onAllResourcesLoaded(callback) {
