@@ -94,11 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (audioCreated) return;
         
         if (shouldPlay) {
-            // Показываем лоадер только если пользователь нажал play
-            playIcon.style.display = 'none';
-            pauseIcon.style.display = 'none';
-            loadingIcon.style.display = '';
-            playButton.classList.add('loading');
+            showLoader();
         }
         
         audioElement = document.createElement('audio');
@@ -107,24 +103,61 @@ document.addEventListener('DOMContentLoaded', () => {
         audioElement.loop = true;
         audioElement.src = 'design/vibe.mp3';
         
+        // Обработка буферизации во время воспроизведения
+        audioElement.addEventListener('waiting', () => {
+            if (isPlaying) showLoader();
+        });
+
+        // Обработка возобновления воспроизведения
+        audioElement.addEventListener('playing', () => {
+            if (isPlaying) hideLoader();
+        });
+        
         // Ждем загрузки аудио
         await new Promise((resolve) => {
+            let playbackStarted = false;
+
+            // Проверяем прогресс загрузки
+            audioElement.addEventListener('progress', () => {
+                if (playbackStarted) return;
+                
+                if (audioElement.buffered.length > 0) {
+                    const bufferedEnd = audioElement.buffered.end(audioElement.buffered.length - 1);
+                    
+                    // Если загружено больше 1 минуты, начинаем воспроизведение
+                    if (bufferedEnd >= 60 && shouldPlay) {
+                        playbackStarted = true;
+                        hideLoader();
+                        pauseIcon.style.display = '';
+                        audioElement.play();
+                    }
+                }
+            });
+
+            // Ждем полной загрузки для resolve
             audioElement.addEventListener('canplaythrough', resolve, { once: true });
+            
             document.body.appendChild(audioElement);
         });
         
         audioCreated = true;
         
-        if (shouldPlay) {
-            // Скрываем лоадер и показываем pause только если пользователь нажал play
-            loadingIcon.style.display = 'none';
-            playButton.classList.remove('loading');
-            await audioElement.play();
-            pauseIcon.style.display = '';
-        } else {
-            // При автоматической загрузке просто показываем play
+        if (!shouldPlay) {
             playIcon.style.display = '';
         }
+    }
+
+    // Вспомогательные функции для управления лоадером
+    function showLoader() {
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'none';
+        loadingIcon.style.display = '';
+        playButton.classList.add('loading');
+    }
+
+    function hideLoader() {
+        loadingIcon.style.display = 'none';
+        playButton.classList.remove('loading');
     }
 
     // Следим за загрузкой всех ресурсов
