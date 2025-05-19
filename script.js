@@ -1,3 +1,8 @@
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+// Проверяем, открыт ли файл локально
+const isLocalFile = window.location.protocol === 'file:';
+
 document.addEventListener('DOMContentLoaded', () => {
     const headerImage = new Image();
     headerImage.src = 'design/header.webp';
@@ -112,7 +117,22 @@ document.addEventListener('DOMContentLoaded', () => {
         audioElement.addEventListener('playing', () => {
             if (isPlaying) hideLoader();
         });
-        
+
+        // Обработка ошибок воспроизведения
+        audioElement.addEventListener('error', () => {
+            if (isPlaying) {
+                // Пробуем воспроизвести через небольшой интервал
+                setTimeout(() => {
+                    audioElement.play().then(() => {
+                        isPlaying = true;
+                    }).catch(() => {
+                        // Если не удалось, пробуем еще раз через большую задержку
+                        setTimeout(() => audioElement.play(), 500);
+                    });
+                }, 250);
+            }
+        });
+
         // Ждем загрузки аудио
         await new Promise((resolve) => {
             let playbackStarted = false;
@@ -132,11 +152,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         // На мобильных устройствах может потребоваться несколько попыток
                         const attemptPlayback = () => {
                             audioElement.play().then(() => {
+                                isPlaying = true;
                                 pauseIcon.style.display = '';
                                 playIcon.style.display = 'none';
                             }).catch(() => {
                                 // Если не удалось воспроизвести, пробуем еще раз через небольшую задержку
-                                setTimeout(attemptPlayback, 100);
+                                setTimeout(attemptPlayback, 500);
                             });
                         };
                         
@@ -150,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!playbackStarted && shouldPlay) {
                     const attemptPlayback = () => {
                         audioElement.play().then(() => {
+                            isPlaying = true;
                             hideLoader();
                             pauseIcon.style.display = '';
                             playIcon.style.display = 'none';
@@ -241,14 +263,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 playRequested = true;
 
                 if (!audioCreated) {
-                    await createAndMaybePlayAudio(true);
-                    isPlaying = true;
+                    // На iOS создаем аудио и пытаемся воспроизвести сразу
+                    if (isIOS) {
+                        audioElement = document.createElement('audio');
+                        audioElement.id = 'background-music';
+                        audioElement.type = 'audio/mpeg';
+                        audioElement.loop = true;
+                        audioElement.src = 'design/vibe.mp3';
+                        
+                        // Пробуем воспроизвести сразу, так как это пользовательский клик
+                        await audioElement.play();
+                        audioCreated = true;
+                        isPlaying = true;
+                        playIcon.style.display = 'none';
+                        pauseIcon.style.display = '';
+                        hideLoader();
+                    } else {
+                        await createAndMaybePlayAudio(true);
+                        isPlaying = true;
+                    }
                 } else {
                     showLoader();
                     await audioElement.play();
+                    isPlaying = true;
                     playIcon.style.display = 'none';
                     pauseIcon.style.display = '';
-                    isPlaying = true;
                     hideLoader();
                 }
             } else {
@@ -258,6 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (audioElement) audioElement.pause();
             }
         } catch (error) {
+            console.error('Playback error:', error);
             showLoader();
         } finally {
             isTransitioning = false;
