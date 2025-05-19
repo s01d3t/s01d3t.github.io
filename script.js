@@ -128,14 +128,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (bufferedEnd >= 30 && shouldPlay) {
                         playbackStarted = true;
                         hideLoader();
-                        audioElement.play().then(() => {
-                            pauseIcon.style.display = '';
-                            playIcon.style.display = 'none';
-                        }).catch((error) => {
-                            // Если не удалось начать воспроизведение, пробуем еще раз при следующем прогрессе
-                            playbackStarted = false;
-                            showLoader();
-                        });
+                        
+                        // На мобильных устройствах может потребоваться несколько попыток
+                        const attemptPlayback = () => {
+                            audioElement.play().then(() => {
+                                pauseIcon.style.display = '';
+                                playIcon.style.display = 'none';
+                            }).catch(() => {
+                                // Если не удалось воспроизвести, пробуем еще раз через небольшую задержку
+                                setTimeout(attemptPlayback, 100);
+                            });
+                        };
+                        
+                        attemptPlayback();
                     }
                 }
             });
@@ -143,13 +148,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // Ждем полной загрузки для resolve
             audioElement.addEventListener('canplaythrough', () => {
                 if (!playbackStarted && shouldPlay) {
-                    audioElement.play().then(() => {
-                        hideLoader();
-                        pauseIcon.style.display = '';
-                        playIcon.style.display = 'none';
-                    }).catch((error) => {
-                        showLoader();
-                    });
+                    const attemptPlayback = () => {
+                        audioElement.play().then(() => {
+                            hideLoader();
+                            pauseIcon.style.display = '';
+                            playIcon.style.display = 'none';
+                        }).catch(() => {
+                            setTimeout(attemptPlayback, 100);
+                        });
+                    };
+                    
+                    attemptPlayback();
                 }
                 resolve();
             }, { once: true });
