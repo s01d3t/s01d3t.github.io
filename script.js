@@ -123,19 +123,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (audioElement.buffered.length > 0) {
                     const bufferedEnd = audioElement.buffered.end(audioElement.buffered.length - 1);
+                    console.log('Buffered:', bufferedEnd, 'seconds');
                     
-                    // Если загружено больше 1 минуты, начинаем воспроизведение
-                    if (bufferedEnd >= 60 && shouldPlay) {
+                    // Если загружено больше 30 секунд, начинаем воспроизведение
+                    if (bufferedEnd >= 30 && shouldPlay) {
+                        console.log('Starting playback, buffered:', bufferedEnd, 'seconds');
                         playbackStarted = true;
                         hideLoader();
                         pauseIcon.style.display = '';
-                        audioElement.play();
+                        audioElement.play().catch((error) => {
+                            console.error('Playback failed:', error);
+                            // Если не удалось начать воспроизведение, пробуем еще раз при следующем прогрессе
+                            playbackStarted = false;
+                        });
                     }
                 }
             });
 
             // Ждем полной загрузки для resolve
-            audioElement.addEventListener('canplaythrough', resolve, { once: true });
+            audioElement.addEventListener('canplaythrough', () => {
+                console.log('Audio can play through');
+                if (!playbackStarted && shouldPlay) {
+                    console.log('Starting playback on canplaythrough');
+                    hideLoader();
+                    pauseIcon.style.display = '';
+                    audioElement.play();
+                }
+                resolve();
+            }, { once: true });
             
             document.body.appendChild(audioElement);
         });
