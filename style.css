@@ -108,6 +108,7 @@ main {
     color: var(--caption-color);
     display: flex;
     justify-content: center;
+
 }
 
 .contact-link {
@@ -129,6 +130,14 @@ main {
     height: 1.2em;
     vertical-align: middle;
     transform: translateY(-1px);
+}
+
+.instagram-icon {
+    width: 1.4em;
+    height: 1.4em;
+    vertical-align: middle;
+    transform: translateY(-1px);
+    margin-right: -5px;
 }
 
 @keyframes pulse {
