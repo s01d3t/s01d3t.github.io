@@ -123,18 +123,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (audioElement.buffered.length > 0) {
                     const bufferedEnd = audioElement.buffered.end(audioElement.buffered.length - 1);
-                    console.log('Buffered:', bufferedEnd, 'seconds');
                     
                     // Если загружено больше 30 секунд, начинаем воспроизведение
                     if (bufferedEnd >= 30 && shouldPlay) {
-                        console.log('Starting playback, buffered:', bufferedEnd, 'seconds');
                         playbackStarted = true;
                         hideLoader();
-                        pauseIcon.style.display = '';
-                        audioElement.play().catch((error) => {
-                            console.error('Playback failed:', error);
+                        audioElement.play().then(() => {
+                            pauseIcon.style.display = '';
+                            playIcon.style.display = 'none';
+                        }).catch((error) => {
                             // Если не удалось начать воспроизведение, пробуем еще раз при следующем прогрессе
                             playbackStarted = false;
+                            showLoader();
                         });
                     }
                 }
@@ -142,12 +142,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Ждем полной загрузки для resolve
             audioElement.addEventListener('canplaythrough', () => {
-                console.log('Audio can play through');
                 if (!playbackStarted && shouldPlay) {
-                    console.log('Starting playback on canplaythrough');
-                    hideLoader();
-                    pauseIcon.style.display = '';
-                    audioElement.play();
+                    audioElement.play().then(() => {
+                        hideLoader();
+                        pauseIcon.style.display = '';
+                        playIcon.style.display = 'none';
+                    }).catch((error) => {
+                        showLoader();
+                    });
                 }
                 resolve();
             }, { once: true });
@@ -159,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!shouldPlay) {
             playIcon.style.display = '';
+            pauseIcon.style.display = 'none';
         }
     }
 
@@ -202,26 +205,33 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isTransitioning) return;
         isTransitioning = true;
 
-        // Меняем иконку и состояние сразу
-        if (!isPlaying) {
-            playRequested = true;
+        try {
+            // Меняем иконку и состояние сразу
+            if (!isPlaying) {
+                playRequested = true;
 
-            if (!audioCreated) {
-                await createAndMaybePlayAudio(true);
-                isPlaying = true;
+                if (!audioCreated) {
+                    await createAndMaybePlayAudio(true);
+                    isPlaying = true;
+                } else {
+                    showLoader();
+                    await audioElement.play();
+                    playIcon.style.display = 'none';
+                    pauseIcon.style.display = '';
+                    isPlaying = true;
+                    hideLoader();
+                }
             } else {
-                playIcon.style.display = 'none';
-                pauseIcon.style.display = '';
-                isPlaying = true;
-                await audioElement.play();
+                playIcon.style.display = '';
+                pauseIcon.style.display = 'none';
+                isPlaying = false;
+                if (audioElement) audioElement.pause();
             }
-        } else {
-            playIcon.style.display = '';
-            pauseIcon.style.display = 'none';
-            isPlaying = false;
-            if (audioElement) audioElement.pause();
+        } catch (error) {
+            showLoader();
+        } finally {
+            isTransitioning = false;
         }
-        isTransitioning = false;
     });
 
     // Показываем кнопку скролла и галерею только после полной загрузки хедера
