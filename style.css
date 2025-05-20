@@ -52,7 +52,6 @@ main {
     position: relative;
     z-index: 1;
     padding-top: 100vh;
-    transition: padding-top 0.5s;
 }
 
 .gallery {
@@ -61,6 +60,12 @@ main {
     margin: 0 auto;
     position: relative;
     z-index: 2;
+}
+
+.gallery-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
 }
 
 .row {
@@ -368,15 +373,5 @@ img {
 .loading .loading-icon {
     opacity: 1;
     pointer-events: auto;
-}
-
-.gallery-hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.main-initial {
-    padding-top: 100vh;
-    transition: padding-top 0.5s;
 }
 

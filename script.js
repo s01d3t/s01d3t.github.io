@@ -426,13 +426,8 @@ document.addEventListener('DOMContentLoaded', () => {
     headerImage.onload = () => {
         scrollDownButton.classList.add('visible');
         playButton.classList.add('visible');
+        gallery.classList.add('visible');
         gallery.classList.remove('gallery-hidden');
-        const main = document.querySelector('main');
-        if (main.classList.contains('main-initial')) {
-            main.classList.remove('main-initial');
-        }
-        gallery.classList.add('fade-in'); // плавное появление
-        setTimeout(() => gallery.classList.remove('fade-in'), 600);
     };
 
     // Следим за загрузкой всех картин
