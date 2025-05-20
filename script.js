@@ -114,12 +114,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
-    function fadeInUniversal(duration = 2, callback) {
+    function fadeInUniversal(duration = 1, callback) {
         if (gainNode) {
             if (fadeTimeout) clearTimeout(fadeTimeout);
             const now = audioContext.currentTime;
             gainNode.gain.cancelScheduledValues(now);
-            gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+            gainNode.gain.setValueAtTime(gainNode.gain.value, now + 0.01); // небольшой offset для избежания щелчка
             gainNode.gain.linearRampToValueAtTime(1, now + duration);
             fadeTimeout = setTimeout(() => { if (callback) callback(); }, duration * 1000);
         } else if (audioElement) {
@@ -140,13 +140,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function fadeOutUniversal(duration = 2, callback) {
+    function fadeOutUniversal(duration = 1, callback) {
         if (gainNode) {
             if (fadeTimeout) clearTimeout(fadeTimeout);
             const now = audioContext.currentTime;
             gainNode.gain.cancelScheduledValues(now);
-            gainNode.gain.setValueAtTime(gainNode.gain.value, now);
-            gainNode.gain.linearRampToValueAtTime(0.0001, now + duration); // не до 0, а до 0.0001 чтобы не было щелчка
+            gainNode.gain.setValueAtTime(gainNode.gain.value, now + 0.01); // небольшой offset для избежания щелчка
+            gainNode.gain.linearRampToValueAtTime(0.001, now + duration); // ramp до 0.001 для предотвращения щелчка
             fadeTimeout = setTimeout(() => { if (callback) callback(); }, duration * 1000);
         } else if (audioElement) {
             if (fadeInterval) clearInterval(fadeInterval);
@@ -426,8 +426,13 @@ document.addEventListener('DOMContentLoaded', () => {
     headerImage.onload = () => {
         scrollDownButton.classList.add('visible');
         playButton.classList.add('visible');
-        gallery.classList.add('visible');
         gallery.classList.remove('gallery-hidden');
+        const main = document.querySelector('main');
+        if (main.classList.contains('main-initial')) {
+            main.classList.remove('main-initial');
+        }
+        gallery.classList.add('fade-in'); // плавное появление
+        setTimeout(() => gallery.classList.remove('fade-in'), 600);
     };
 
     // Следим за загрузкой всех картин

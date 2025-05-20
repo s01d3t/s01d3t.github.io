@@ -52,6 +52,7 @@ main {
     position: relative;
     z-index: 1;
     padding-top: 100vh;
+    transition: padding-top 0.5s;
 }
 
 .gallery {
@@ -188,6 +189,12 @@ main {
     opacity: 0;
     pointer-events: none;
     display: none;
+}
+
+button, .play, .scroll-down {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    outline: none;
 }
 
 .scroll-down.visible {
@@ -361,5 +368,15 @@ img {
 .loading .loading-icon {
     opacity: 1;
     pointer-events: auto;
+}
+
+.gallery-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.main-initial {
+    padding-top: 100vh;
+    transition: padding-top 0.5s;
 }
 
