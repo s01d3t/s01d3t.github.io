@@ -348,6 +348,7 @@ img {
     pointer-events: none;
     animation: spin 1s linear infinite;
     filter: invert(65%) sepia(1%) saturate(325%) hue-rotate(0deg) brightness(92%) contrast(86%);
+    margin-top: 3px;
 }
 
 .loading .play-icon,
