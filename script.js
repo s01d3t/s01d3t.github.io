@@ -283,10 +283,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     playButton.addEventListener('click', async () => {
-        if (isTransitioning) return; // Prevent multiple clicks during transition
+        if (isTransitioning) return; // Предотвращаем множественные клики во время перехода
         isTransitioning = true;
 
-        // Update icons immediately
+        // Обновляем иконки сразу
         if (!isPlaying) {
             playIcon.style.display = 'none';
             pauseIcon.style.display = '';
@@ -300,66 +300,71 @@ document.addEventListener('DOMContentLoaded', () => {
                 playRequested = true;
 
                 if (!audioCreated) {
-                    showLoader(); // Ensure loader is visible during audio creation
+                    showLoader(); // Показываем лоадер во время создания аудио
 
                     audioElement = document.createElement('audio');
                     audioElement.id = 'background-music';
                     audioElement.type = 'audio/mpeg';
                     audioElement.loop = true;
                     audioElement.src = 'design/vibe.mp3';
-                    audioElement.volume = 0; // Start with volume at 0
+                    audioElement.volume = 0; // Начинаем с громкости 0
 
                     document.body.appendChild(audioElement);
 
-                    // Wait for audio to be ready to play
+                    // Ждем, пока аудио станет готовым к воспроизведению
                     await new Promise((resolve, reject) => {
                         audioElement.addEventListener('canplay', resolve, { once: true });
                         audioElement.addEventListener('error', reject, { once: true });
                     });
 
-                    await audioElement.play().catch((error) => {
-                        console.error('Playback error:', error);
+                    // Попытка воспроизведения аудио
+                    try {
+                        await audioElement.play();
+                        audioCreated = true;
+                        isPlaying = true;
+
+                        fadeInVolume(audioElement, () => {
+                            isTransitioning = false;
+                        }); // Плавное увеличение громкости
+                        hideLoader();
+                    } catch (playError) {
+                        console.error('Playback error on mobile:', playError);
                         hideLoader();
                         isTransitioning = false;
                         return;
-                    });
-
-                    audioCreated = true;
-                    isPlaying = true;
-
-                    fadeInVolume(audioElement, () => {
-                        isTransitioning = false;
-                    }); // Smoothly increase volume
-                    hideLoader();
+                    }
                 } else {
                     showLoader();
-                    audioElement.volume = 0; // Start with volume at 0
-                    await audioElement.play().catch((error) => {
-                        console.error('Playback error:', error);
+                    audioElement.volume = 0; // Начинаем с громкости 0
+
+                    // Попытка воспроизведения аудио
+                    try {
+                        await audioElement.play();
+                        isPlaying = true;
+
+                        fadeInVolume(audioElement, () => {
+                            isTransitioning = false;
+                        }); // Плавное увеличение громкости
+                        hideLoader();
+                    } catch (playError) {
+                        console.error('Playback error on mobile:', playError);
                         hideLoader();
                         isTransitioning = false;
                         return;
-                    });
-
-                    isPlaying = true;
-
-                    fadeInVolume(audioElement, () => {
-                        isTransitioning = false;
-                    }); // Smoothly increase volume
-                    hideLoader();
+                    }
                 }
             } else {
                 fadeOutVolume(audioElement, () => {
                     audioElement.pause();
                     isPlaying = false;
                     isTransitioning = false;
-                }); // Smoothly decrease volume before pausing
+                }); // Плавное уменьшение громкости перед паузой
             }
         } catch (error) {
             console.error('Playback error:', error);
             hideLoader();
 
-            // Revert icons to previous state in case of error
+            // Возвращаем иконки в предыдущее состояние в случае ошибки
             if (isPlaying) {
                 playIcon.style.display = 'none';
                 pauseIcon.style.display = '';
