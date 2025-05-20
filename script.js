@@ -117,17 +117,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function fadeInUniversal(duration = 2, callback) {
         if (gainNode) {
             if (fadeTimeout) clearTimeout(fadeTimeout);
-            gainNode.gain.cancelScheduledValues(audioContext.currentTime);
-            gainNode.gain.setValueAtTime(gainNode.gain.value, audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(1, audioContext.currentTime + duration);
+            const now = audioContext.currentTime;
+            gainNode.gain.cancelScheduledValues(now);
+            gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+            gainNode.gain.linearRampToValueAtTime(1, now + duration);
             fadeTimeout = setTimeout(() => { if (callback) callback(); }, duration * 1000);
         } else if (audioElement) {
-            // fallback для старых браузеров
             if (fadeInterval) clearInterval(fadeInterval);
             const fadeSteps = 100;
             const fadeIntervalMs = (duration * 1000) / fadeSteps;
-            let currentStep = 0;
-            audioElement.volume = 0;
+            let currentStep = Math.round(audioElement.volume * fadeSteps);
             fadeInterval = setInterval(() => {
                 currentStep++;
                 audioElement.volume = Math.min(currentStep / fadeSteps, 1);
@@ -144,12 +143,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function fadeOutUniversal(duration = 2, callback) {
         if (gainNode) {
             if (fadeTimeout) clearTimeout(fadeTimeout);
-            gainNode.gain.cancelScheduledValues(audioContext.currentTime);
-            gainNode.gain.setValueAtTime(gainNode.gain.value, audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + duration);
+            const now = audioContext.currentTime;
+            gainNode.gain.cancelScheduledValues(now);
+            gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+            gainNode.gain.linearRampToValueAtTime(0.0001, now + duration); // не до 0, а до 0.0001 чтобы не было щелчка
             fadeTimeout = setTimeout(() => { if (callback) callback(); }, duration * 1000);
         } else if (audioElement) {
-            // fallback для старых браузеров
             if (fadeInterval) clearInterval(fadeInterval);
             const fadeSteps = 100;
             const fadeIntervalMs = (duration * 1000) / fadeSteps;
