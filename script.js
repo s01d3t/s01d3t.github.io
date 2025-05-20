@@ -91,6 +91,82 @@ document.addEventListener('DOMContentLoaded', () => {
     const pauseIcon = playButton.querySelector('.pause-icon');
     const loadingIcon = playButton.querySelector('.loading-icon');
 
+    let audioContext = null;
+    let sourceNode = null;
+    let gainNode = null;
+    let fadeTimeout = null;
+
+    function setupWebAudio() {
+        if (isLocalFile) return false; // Отключаем Web Audio API для file://
+        if (!window.AudioContext && !window.webkitAudioContext) return false;
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (!gainNode) {
+            gainNode = audioContext.createGain();
+            gainNode.gain.value = 0;
+            gainNode.connect(audioContext.destination);
+        }
+        if (audioElement && !sourceNode) {
+            sourceNode = audioContext.createMediaElementSource(audioElement);
+            sourceNode.connect(gainNode);
+        }
+        return true;
+    }
+
+    function fadeInUniversal(duration = 2, callback) {
+        if (gainNode) {
+            if (fadeTimeout) clearTimeout(fadeTimeout);
+            gainNode.gain.cancelScheduledValues(audioContext.currentTime);
+            gainNode.gain.setValueAtTime(gainNode.gain.value, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(1, audioContext.currentTime + duration);
+            fadeTimeout = setTimeout(() => { if (callback) callback(); }, duration * 1000);
+        } else if (audioElement) {
+            // fallback для старых браузеров
+            if (fadeInterval) clearInterval(fadeInterval);
+            const fadeSteps = 100;
+            const fadeIntervalMs = (duration * 1000) / fadeSteps;
+            let currentStep = 0;
+            audioElement.volume = 0;
+            fadeInterval = setInterval(() => {
+                currentStep++;
+                audioElement.volume = Math.min(currentStep / fadeSteps, 1);
+                if (currentStep >= fadeSteps) {
+                    clearInterval(fadeInterval);
+                    fadeInterval = null;
+                    audioElement.volume = 1;
+                    if (callback) callback();
+                }
+            }, fadeIntervalMs);
+        }
+    }
+
+    function fadeOutUniversal(duration = 2, callback) {
+        if (gainNode) {
+            if (fadeTimeout) clearTimeout(fadeTimeout);
+            gainNode.gain.cancelScheduledValues(audioContext.currentTime);
+            gainNode.gain.setValueAtTime(gainNode.gain.value, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + duration);
+            fadeTimeout = setTimeout(() => { if (callback) callback(); }, duration * 1000);
+        } else if (audioElement) {
+            // fallback для старых браузеров
+            if (fadeInterval) clearInterval(fadeInterval);
+            const fadeSteps = 100;
+            const fadeIntervalMs = (duration * 1000) / fadeSteps;
+            let currentStep = Math.round(audioElement.volume * fadeSteps);
+            fadeInterval = setInterval(() => {
+                currentStep--;
+                audioElement.volume = Math.max(currentStep / fadeSteps, 0);
+                if (currentStep <= 0) {
+                    clearInterval(fadeInterval);
+                    fadeInterval = null;
+                    audioElement.volume = 0;
+                    if (callback) callback();
+                }
+            }, fadeIntervalMs);
+        }
+    }
+
     // Функция создания и запуска аудио
     async function createAndMaybePlayAudio(shouldPlay) {
         if (audioCreated) return;
@@ -288,10 +364,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     playButton.addEventListener('click', async () => {
-        if (isTransitioning) return; // Игнорируем клик, если идет переход
+        if (isTransitioning) return;
         isTransitioning = true;
 
-        // Переключаем иконки сразу же
         if (!isPlaying) {
             playIcon.style.display = 'none';
             pauseIcon.style.display = '';
@@ -311,18 +386,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     audioElement.type = 'audio/mpeg';
                     audioElement.loop = true;
                     audioElement.src = 'design/vibe.mp3';
-                    audioElement.volume = 0; // Начинаем с громкости 0
+                    audioElement.preload = 'auto';
                     document.body.appendChild(audioElement);
                     audioCreated = true;
-                } else {
-                    audioElement.volume = 0;
                 }
+
+                let webAudioOk = setupWebAudio();
+                if (webAudioOk) gainNode.gain.value = 0;
+                else audioElement.volume = 0;
 
                 try {
                     await audioElement.play();
                     isPlaying = true;
                     hideLoader();
-                    fadeInVolume(audioElement, () => {
+                    fadeInUniversal(2, () => {
                         isTransitioning = false;
                     });
                 } catch (err) {
@@ -332,11 +409,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     pauseIcon.style.display = 'none';
                 }
             } else {
-                fadeOutVolume(audioElement, () => {
+                fadeOutUniversal(2, () => {
                     audioElement.pause();
                     isPlaying = false;
                     isTransitioning = false;
-                }); // Плавное уменьшение громкости перед паузой
+                });
             }
         } catch (error) {
             hideLoader();
