@@ -5,24 +5,16 @@
 }
 
 :root {
-    --artwork-width: 650px;
-    --artwork-height: 700px;
-    --vibe-width: 950px;
-    --vibe-height: 700px;
-    --side-padding: 20px;
-    --gap-between-images: 20px;
-    --gap-between-rows: 250px;
-    --caption-color: #66666694;
-    --font-family: 'Courier New', monospace;
+    --c: #66666694;
+    --f: 'Courier New', monospace;
 }
 
 body {
     overflow-x: hidden;
     background: url('design/background.webp') center/cover no-repeat fixed;
-    min-width: calc(var(--artwork-width) + var(--vibe-width) + var(--gap-between-images) + (var(--side-padding) * 2));
-    font-family: var(--font-family);
-    padding: 0 var(--side-padding);
-    transition: background 0.5s ease;
+    font: 20px/1.6 var(--f);
+    color: var(--c);
+    padding: 0 20px;
 }
 
 .header {
@@ -31,12 +23,11 @@ body {
     z-index: 1000;
     background: url('design/header.webp') center/cover no-repeat;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity .3s;
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    padding-bottom: 43px;
-    gap: 20px;
+    padding-bottom: 45px;
 }
 
 .header.hidden {
@@ -45,80 +36,41 @@ body {
 }
 
 main {
-    margin: 0 auto;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    position: relative;
-    z-index: 1;
-    padding-top: 100vh;
+    padding-top: 120vh;
 }
 
 .gallery {
-    max-width: calc(var(--artwork-width) + var(--vibe-width) + var(--gap-between-images));
-    width: 100%;
-    margin: 0 auto;
-    position: relative;
-    z-index: 2;
-}
-
-.gallery-hidden {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s;
-}
-
-.row {
-    margin: var(--gap-between-rows) 0;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-.image-container {
-    display: flex;
-    gap: var(--gap-between-images);
-    position: relative;
-}
-
-.image-container img {
-    object-fit: cover;
-}
-
-.artwork img {
-    width: var(--artwork-width);
-    height: var(--artwork-height);
-}
-
-.image-container img:last-child {
-    width: var(--vibe-width);
-    height: var(--vibe-height);
-}
-
-.artwork {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    align-items: center;
+    gap: 300px;
+    padding-bottom: 200px;
 }
 
-.caption {
-    color: var(--caption-color);
-    font-size: 20px;
-    line-height: 1.6;
-    margin-top: 15px;
+.gallery img {
+    width: 100%;
+    max-width: 550px;
+    height: auto;
+    display: block;
+    margin: 0 auto 20px;
+}
+
+.art p {
+    text-align: left;
+    margin-top: 30px;
+    font-size: 22px;
 }
 
 .contact-info {
     text-align: center;
     padding: 20px 0;
-    color: var(--caption-color);
     display: flex;
     justify-content: center;
 
 }
 
 .contact-link {
-    color: var(--caption-color);
+    color: var(--c);
     font-size: 25px;
     text-decoration: none;
     transition: opacity 0.3s ease;
@@ -146,146 +98,72 @@ main {
     margin-right: -5px;
 }
 
-@keyframes pulse {
-    0% {
-        opacity: 0.4;
-    }
-    50% {
-        opacity: 1; 
-    }
-    100% {
-        opacity: 0.4;
-    }
-}
 
-.buttons-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
+.play, .scroll-down {
+    background: none;
+    border: none;
+    cursor: pointer;
+    animation: pulse 2s ease-in-out infinite;
+    opacity: 0;
+    pointer-events: none;
+    padding: 10px 20px;
 }
 
 .scroll-down {
-    background: none;
-    border: none;
-    color: var(--caption-color);
-    font-family: var(--font-family);
-    cursor: pointer;
-    padding: 10px 20px;
-    transition: opacity 0.5s ease;
-    animation: pulse 2s ease-in-out infinite;
-    opacity: 0;
-    pointer-events: none;
-    display: none;
-    margin-top: 8px;
-    padding-top: 5px;
-    transform: translateY(3px);
+    transform: translateY(2px);
 }
 
-.play {
-    background: none;
-    border: none;
-    color: var(--caption-color);
-    font-family: var(--font-family);
-    cursor: pointer;
-    padding: 10px 20px;
-    transition: opacity 0.5s ease;
-    animation: pulse 2s ease-in-out infinite;
+.scroll-down.visible, .play.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.play-icon, .pause-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.down-icon, .loading-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.play-icon, .pause-icon, .down-icon, .loading-icon {
+    filter: invert(65%) sepia(1%) saturate(325%) hue-rotate(0deg) brightness(92%) contrast(86%);
+}
+
+.loading-icon {
     opacity: 0;
-    pointer-events: none;
+    animation: spin 1s linear infinite;
+}
+
+.loading .play-icon, .loading .pause-icon {
     display: none;
+}
+
+.loading .loading-icon {
+    opacity: 1;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: .4
+    }
+    50% {
+        opacity: 1
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg)
+    }
 }
 
 button, .play, .scroll-down {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
     outline: none;
-}
-
-.scroll-down.visible {
-    display: block;
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.play.visible {
-    display: block;
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.header.hidden .scroll-down {
-    opacity: 0;
-    pointer-events: none;
-    cursor: default;
-}
-
-@media (max-width: 1023px) {
-    body {
-        min-width: auto;
-    }
-
-    .header {
-        background-size: cover;
-        background-position: center;
-        padding-bottom: 20px;
-    }
-
-    .down-icon {
-        width: 40px;
-        height: 40px;
-    }
-
-    .image-container img:last-child {
-        display: none;
-    }
-    
-    main {
-        padding-top: 50vh;
-    }
-
-    .gallery {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .row {
-        margin: calc(var(--gap-between-rows) * 1.1) 0;
-    }
-
-    .row:last-child {
-        margin-bottom: 200px;
-    }
-
-    .image-container {
-        width: 100%;
-        max-width: 650px;
-        margin: 0 auto;
-    }
-
-    .artwork {
-        width: 100%;
-    }
-
-    .artwork img {
-        width: 100%;
-        height: auto;
-        max-width: 650px;
-    }
-}
-
-@media (max-width: 425px) {
-    .row {
-        padding: 0 15px;
-    }
-
-    .caption {
-        font-size: 15px;
-    }
-
-    .contact-link {
-        font-size: 20px;
-    }
 }
 
 img {
@@ -301,77 +179,32 @@ img {
     pointer-events: none;
 }
 
-.play-icon, .pause-icon {
-    width: 30px;
-    height: 30px;
-    filter: invert(65%) sepia(1%) saturate(325%) hue-rotate(0deg) brightness(92%) contrast(86%);
-}
-
-.down-icon {
-    width: 32px;
-    height: 32px;
-    filter: invert(65%) sepia(1%) saturate(325%) hue-rotate(0deg) brightness(92%) contrast(86%);
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-.fade-in {
-    animation: fadeIn 0.2s ease-in-out forwards;
-}
-
-.fade-out {
-    animation: fadeOut 0.2s ease-in-out forwards;
-}
-
-.play-icon.header-icon,
-.pause-icon.header-icon {
-    width: 28px;
-    height: 28px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.header:not(.hidden) .play-icon.header-icon,
-.header:not(.hidden) .pause-icon.header-icon {
-    opacity: 1;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
+@media (max-width: 1023px) {
+    main {
+        padding-top: 80vh;
     }
-    to {
-        transform: rotate(360deg);
+
+    .gallery {
+        gap: 275px;
+        padding-bottom: 200px;
+    }
+
+    .header {
+        padding-bottom: 20px;
+    }
+
+    @media (max-width: 425px) {
+        .play-icon, .pause-icon, .down-icon {
+            width: 30px;
+            height: 30px;
+        }
+
+        .contact-link {
+            font-size: 20px;
+        }
+
+        .art p {
+            font-size: 20px;
+        }
     }
 }
-
-.loading-icon {
-    width: 32px;
-    height: 32px;
-    opacity: 0;
-    pointer-events: none;
-    animation: spin 1s linear infinite;
-    filter: invert(65%) sepia(1%) saturate(325%) hue-rotate(0deg) brightness(92%) contrast(86%);
-    position: relative;
-    top: 5px;
-    vertical-align: 3px;
-}
-
-.loading .play-icon,
-.loading .pause-icon {
-    display: none;
-}
-
-.loading .loading-icon {
-    opacity: 1;
-    pointer-events: auto;
-}
-

@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Scroll button click
     scrollDownButton.addEventListener('click', () => {
-        const firstArtwork = document.querySelector('.artwork');
+        const firstArtwork = document.querySelector('.art');
         if (firstArtwork) {
             const artworkRect = firstArtwork.getBoundingClientRect();
             const windowHeight = window.innerHeight;
